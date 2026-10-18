@@ -8,3 +8,8 @@ window.FIREBASE_CONFIG = {
   appId: "1:429460043685:web:32fa41256cb84cacb1da4c"
 };
  
+/* Optional: your GitHub Pages address. Fill this in only if you open board.html
+   from your computer instead of from GitHub. Example:
+   window.SITE_URL = "https://emanjeha.github.io/insertion-games/"; */
+window.SITE_URL = "https://emanjeha.github.io/games/";
+ 

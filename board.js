@@ -1,3 +1,4 @@
+
 /* Teacher's smart-board page. Open as board.html?game=warmup or board.html?game=wrapup. */
 (function () {
   'use strict';
@@ -7,10 +8,14 @@
   const other = gameId === 'warmup' ? 'wrapup' : 'warmup';
   const N = G.questions.length;
   const app = $('#app');
-  const joinURL = new URL('index.html?game=' + gameId, location.href).href;
+  // The QR must point to the website (GitHub Pages), not to a file on this computer.
+  const siteBase = (window.SITE_URL && !/PASTE/.test(window.SITE_URL)) ? window.SITE_URL.replace(/\/?$/, '/') : location.href;
+  const joinURL = new URL('index.html?game=' + gameId, siteBase).href;
+  const localWarn = (location.protocol === 'file:' && siteBase === location.href)
+    ? '<p class="banner" style="margin:0;text-align:left">This board is open from your computer, so phones cannot use this QR code. Open <b>board.html</b> from your GitHub link instead.</p>' : '';
   document.title = G.name + ' · Live';
   floaters(G.floaters || []);
-
+ 
   /* ---------- not connected: show setup help ---------- */
   if (!LIVE.on) {
     app.innerHTML = `<div class="card setup">
@@ -23,10 +28,10 @@
     </div>`;
     return;
   }
-
+ 
   let state = null, round = 1, players = {}, unsub = null, showResults = false, showTickets = false, armed = false;
   const shown = {}; // displayed score per id (for count-up)
-
+ 
   LIVE.stateRef(gameId).on('value', (snap) => {
     const st = snap.val();
     if (!st) { LIVE.stateRef(gameId).set({ status: 'waiting', round: 1 }); return; }
@@ -37,6 +42,14 @@
     if (statusChanged && st.status === 'ended') showResults = true;
     if (statusChanged && st.status !== 'ended') showResults = false;
     renderShell();
+  }, (err) => {
+    app.innerHTML = `<div class="card setup">
+      <span class="pill">Connected, but Firebase said no</span>
+      <h1 style="font-size:40px">Open the database rules</h1>
+      <p class="banner">${esc(err && err.message ? err.message : 'permission_denied')}</p>
+      <p>In Firebase, open <b>Realtime Database → Rules</b>, replace them with the rules below, click <b>Publish</b>, then reload this page.</p>
+      <pre style="background:#F1F4FF;padding:14px;border-radius:12px;font-size:16px">{\n  "rules": {\n    "sessions": { ".read": true, ".write": true }\n  }\n}</pre>
+    </div>`;
   });
   function subscribe() {
     if (unsub) unsub();
@@ -44,7 +57,7 @@
     const fn = (snap) => { players = snap.val() || {}; updatePlayers(); };
     ref.on('value', fn); unsub = () => ref.off('value', fn);
   }
-
+ 
   /* ---------- layout ---------- */
   function renderShell() {
     const st = state.status;
@@ -65,7 +78,7 @@
     <div class="bgrid">
       <aside class="joinbox ${st === 'live' ? 'mini' : ''}">
         <h2>${st === 'live' ? 'Join late?' : 'Scan to join'}</h2>
-        <div id="qr"></div>
+        ${localWarn}<div id="qr"></div>
         <div class="url">${esc(joinURL)}</div>
         <div class="counts"><div><b id="cJoined">0</b><small>Pairs</small></div><div><b id="cPlaying">0</b><small>Playing</small></div><div><b id="cDone">0</b><small>Finished</small></div></div>
       </aside>
@@ -84,14 +97,14 @@
     };
     updatePlayers(true);
   }
-
+ 
   /* ---------- live leaderboard ---------- */
   const sorted = () => Object.entries(players).map(([id, p]) => Object.assign({ id }, p))
     .filter((p) => p.name)
     .sort((a, b) => (b.score || 0) - (a.score || 0) || (b.correct || 0) - (a.correct || 0) || (a.finishedAt || 9e15) - (b.finishedAt || 9e15) || String(a.name).localeCompare(String(b.name)));
   const initials = (n) => String(n).split(/[\s&,+]+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '?';
   const colorFor = (id) => { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
-
+ 
   function updatePlayers(fresh) {
     const main = $('#main'); if (!main) return;
     const list = sorted();
@@ -99,7 +112,7 @@
     $('#cPlaying').textContent = list.filter((p) => !p.done && (p.q || 0) > 0).length;
     $('#cDone').textContent = list.filter((p) => p.done).length;
     if (showResults) { renderResults(main, list); return; }
-
+ 
     if (fresh || !$('#lbList')) {
       main.innerHTML = `<section class="lb"><div class="lb-head"><span>Rank</span><span>Pair</span><span class="hp">Progress</span><span style="text-align:right">Score</span></div><div class="lb-list" id="lbList"></div></section>`;
     }
@@ -143,7 +156,7 @@
     const step = (t) => { const k = Math.min(1, (t - t0) / 700); el.textContent = Math.round(from + (target - from) * (1 - Math.pow(1 - k, 3))); if (k < 1 && el.isConnected) requestAnimationFrame(step); };
     requestAnimationFrame(step);
   }
-
+ 
   /* ---------- results: podium, hardest questions, exit tickets ---------- */
   function renderResults(main, list) {
     const top = list.slice(0, 3);
