@@ -11,5 +11,7 @@ window.FIREBASE_CONFIG = {
 /* Optional: your GitHub Pages address. Fill this in only if you open board.html
    from your computer instead of from GitHub. Example:
    window.SITE_URL = "https://emanjeha.github.io/insertion-games/"; */
-window.SITE_URL = "https://emanjeha.github.io/games/";
+window.SITE_URL = "https://emanjeha.github.io/oop-games/";
  
+/* Keeps these games separate from your other live games in the same Firebase database. */
+window.APP_ID = "oop10";

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Setup Guide · Insertion Sort Games</title>
+<title>Setup Guide · OOP Games</title>
 <style>
   :root { --ink: #1D2340; --soft: #5C6489; --sky: #EEF5FF; --line: #DCE4F7; --purple: #8F4DFF; --pink: #FF4F8B; --teal: #14C3A2; --blue: #3A86FF; --orange: #FF9F1C; }
   body { margin: 0; background: var(--sky); color: var(--ink); font: 17px/1.6 'Segoe UI', system-ui, -apple-system, sans-serif; }
@@ -23,8 +23,8 @@
 </head>
 <body>
 <main>
-  <h1>Insertion Sort Games: setup guide</h1>
-  <p class="lede">About 15 minutes, once. After that, every lesson is: open the board, students scan, press Start.</p>
+  <h1>OOP Games (Grade 10): setup guide</h1>
+  <p class="lede">You already set up Firebase for the insertion sort games, so <b>skip steps 1 and 2</b>: config.js already has your Firebase settings. These games keep their own scores, so they never mix with your other games.</p>
 
   <section>
     <h2><b>1</b>Create the free database (Firebase)</h2>
@@ -58,25 +58,26 @@
 
   <section>
     <h2><b>3</b>Put the games on GitHub Pages</h2>
+    <p class="note" style="margin:0 0 10px">If you name the repository something other than <code>oop-games</code>, change the <code>SITE_URL</code> line at the bottom of config.js to match.</p>
     <ol>
-      <li>On <code>github.com</code> click <b>New repository</b>. Name it <code>insertion-games</code>, set it to <b>Public</b>, and create it.</li>
+      <li>On <code>github.com</code> click <b>New repository</b>. Name it <code>oop-games</code>, set it to <b>Public</b>, and create it.</li>
       <li>Click <b>uploading an existing file</b>. Drag in <b>all the files from this folder</b> (not the folder itself), including your edited <code>config.js</code>. Click <b>Commit changes</b>.</li>
       <li>Open <b>Settings → Pages</b>. Under <b>Build and deployment</b> choose <b>Deploy from a branch</b>, branch <b>main</b>, folder <b>/ (root)</b>, and click <b>Save</b>.</li>
-      <li>Wait 1–2 minutes and refresh. GitHub shows your site address, like <code>https://YOUR-NAME.github.io/insertion-games/</code></li>
+      <li>Wait 1–2 minutes and refresh. GitHub shows your site address, like <code>https://emanjeha.github.io/oop-games/</code></li>
     </ol>
   </section>
 
   <section>
     <h2><b>4</b>Run it in class</h2>
     <table>
-      <tr><td>Smart board</td><td>Open <code>https://YOUR-NAME.github.io/insertion-games/board.html?game=warmup</code> and press <b>Full screen</b>. The QR code and join link appear on the left.</td></tr>
+      <tr><td>Smart board</td><td>Open <code>https://emanjeha.github.io/oop-games/board.html?game=warmup</code> and press <b>Full screen</b>. The QR code and join link appear on the left.</td></tr>
       <tr><td>Students</td><td>One device per pair. They scan the QR code, type both names (for example <i>Sara &amp; Noura</i>) and press <b>Join</b>. Each pair appears on the board straight away.</td></tr>
       <tr><td>Start</td><td>Press <b>Start game</b>. Every pair gets the questions on their own device. The board shows each pair's score, progress and which question they're on, and re-ranks live.</td></tr>
       <tr><td>End</td><td>Press <b>End game</b> (or wait until everyone finishes and press <b>Show results</b>). You get the podium and a chart of which questions the class found hardest.</td></tr>
-      <tr><td>Wrap-up</td><td>At the end of the lesson press <b>Switch to Insertion Showdown</b>. The QR changes to the wrap-up game. After it ends, press <b>Show answers</b> to read every pair's exit ticket.</td></tr>
+      <tr><td>Wrap-up</td><td>At the end of the lesson press <b>Switch to Class Clash</b>. The QR changes to the wrap-up game. After it ends, press <b>Show answers</b> to read every pair's exit ticket.</td></tr>
       <tr><td>Next class</td><td>Press <b>New round</b> (click twice). This clears the board for a fresh group.</td></tr>
     </table>
-    <p class="note">Students can bookmark <code>https://YOUR-NAME.github.io/insertion-games/</code> and choose a game there, but the QR code from the board is quickest.</p>
+    <p class="note">Students can bookmark <code>https://emanjeha.github.io/oop-games/</code> and choose a game there, but the QR code from the board is quickest.</p>
   </section>
 
   <section>

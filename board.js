@@ -175,7 +175,7 @@
         ${list.length ? `<div class="podium">${pod(top[1], 1)}${pod(top[0], 0)}${pod(top[2], 2)}</div>` : ''}
         <div class="insights">
           <div class="panel"><h3>How the class did</h3>${hardest ? `<p class="lede" style="font-size:16px">Hardest: <b>Q${hardest.i + 1} (${esc(hardest.label)})</b>, ${hardest.pct}% correct. Worth reviewing together.</p>` : ''}${accRows}</div>
-          ${gameId === 'wrapup' ? `<div class="panel"><h3>Exit tickets</h3><button class="btn small" id="tk" style="justify-self:start">${showTickets ? 'Hide answers' : 'Show answers'}</button><div class="tickets" ${showTickets ? '' : 'hidden'}>${tickets}</div></div>` : `<div class="panel"><h3>Today's topic</h3><div class="reveal"><div class="big">Insertion Sort</div></div><p class="lede" style="font-size:16px">${list.filter((p) => p.solved).length} of ${list.length} pairs cracked the topic.</p></div>`}
+          ${gameId === 'wrapup' ? `<div class="panel"><h3>Exit tickets</h3><button class="btn small" id="tk" style="justify-self:start">${showTickets ? 'Hide answers' : 'Show answers'}</button><div class="tickets" ${showTickets ? '' : 'hidden'}>${tickets}</div></div>` : `<div class="panel"><h3>Today's topic</h3><div class="reveal"><div class="big">${esc(G.topic)}</div></div><p class="lede" style="font-size:16px">${list.filter((p) => p.solved).length} of ${list.length} pairs cracked the topic.</p></div>`}
         </div>
       </section>`;
     const tk = $('#tk'); if (tk) tk.onclick = () => { showTickets = !showTickets; updatePlayers(true); };

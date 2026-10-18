@@ -9,14 +9,14 @@
 
   /* ---------- no game chosen: pick one ---------- */
   if (!G) {
-    floaters(['20', '43', '28', '15', '31', '4']);
+    floaters(['class', 'self', '{ }', 'obj', '.name', '( )']);
     app.innerHTML = `<section class="center"><div class="card">
-      <span class="pill">Unit 4 · Week 7 · Session 1</span>
-      <h1 class="title"><span class="c1">I</span><span class="c2">n</span><span class="c3">s</span><span class="c4">e</span><span class="c5">r</span><span class="c1">t</span><span class="c2">i</span><span class="c3">o</span><span class="c4">n</span> <span class="c5">G</span><span class="c1">a</span><span class="c2">m</span><span class="c3">e</span><span class="c4">s</span></h1>
+      <span class="pill">Grade 10 · Unit 2 · Session 1</span>
+      <h1 class="title"><span class="c1">O</span><span class="c2">O</span><span class="c3">P</span> <span class="c4">G</span><span class="c5">a</span><span class="c1">m</span><span class="c2">e</span><span class="c3">s</span></h1>
       <p class="lede">Choose the game your teacher asked for.</p>
       <div class="pick">
-        <a class="w" href="?game=warmup"><small>Warm-up</small><b>Sort It Out!</b><span>Guess today's topic</span></a>
-        <a class="r" href="?game=wrapup"><small>Wrap-up</small><b>Insertion Showdown</b><span>Prove you got it</span></a>
+        <a class="w" href="?game=warmup"><small>Warm-up</small><b>Spot the Blueprint!</b><span>Guess today's topic</span></a>
+        <a class="r" href="?game=wrapup"><small>Wrap-up</small><b>Class Clash</b><span>Prove you got it</span></a>
       </div></div></section>`;
     return;
   }
@@ -24,7 +24,7 @@
   document.title = G.name;
   floaters(G.floaters || []);
   const N = G.questions.length;
-  const KEY = 'il:' + gameId;
+  const KEY = 'oop10:' + gameId;
   let state = null, round = 1, me = null, players = {}, unsubPlayers = null, view = '';
   let tick = null, left = 0, answered = false, picks = [], cur = 0;
 
@@ -160,16 +160,20 @@
 
   /* ---------- questions ---------- */
   function hl(line) {
-    return esc(line).replace(/(&quot;.*?&quot;)/g, '<span class="str">$1</span>')
-      .replace(/\b(for|in|while|and|print|range|len)\b/g, (m) => ['print', 'range', 'len'].includes(m) ? `<span class="fn">${m}</span>` : `<span class="kw">${m}</span>`)
-      .replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+    const kw = (x) => esc(x)
+      .replace(/\b(for|in|while|and|class|def|self|return|if|else)\b/g, '<span class="kw">$1</span>')
+      .replace(/\b(print|range|len|int|input)\b/g, '<span class="fn">$1</span>')
+      .replace(/(^|[^\w])(\d+)(?![\w])/g, '$1<span class="num">$2</span>');
+    if (/^\s*#/.test(line)) return '<span style="color:#8A90B5">' + esc(line) + '</span>';
+    return line.split(/("[^"]*")/).map((part, i) => (i % 2 ? '<span class="str">' + esc(part) + '</span>' : kw(part))).join('');
   }
   function renderQ() {
     view = 'play'; answered = false; picks = []; cur = me.q;
     const q = G.questions[cur];
     let area = '';
     if (q.type === 'mc') area = `<div class="opts">${q.options.map((o, i) => `<button class="opt o${i}" data-i="${i}" data-k="${'ABCD'[i]}">${o}</button>`).join('')}</div>`;
-    if (q.type === 'order') area = `<div class="order"><div class="slots">${q.answer.map((_, i) => `<div class="slot"><small>[${i}]</small></div>`).join('')}</div>
+    const slotLbl = (i) => q.wide ? 'Step ' + (i + 1) : '[' + i + ']';
+    if (q.type === 'order') area = `<div class="order${q.wide ? ' wide' : ''}"><div class="slots">${q.answer.map((_, i) => `<div class="slot"><small>${slotLbl(i)}</small></div>`).join('')}</div>
       <div class="pool">${q.tiles.map((t, i) => `<button class="ptile" data-t="${i}" style="background:${COLORS[i % COLORS.length]}">${esc(t)}</button>`).join('')}</div>
       <div class="acts"><button class="btn small" id="undo">Undo</button><button class="btn go small" id="check" disabled>Check answer</button></div></div>`;
     if (q.type === 'line') area = `<div class="code">${q.code.map((l, i) => `<button class="cl" data-l="${i}"><span>${i + 1}</span><span>${hl(l)}</span></button>`).join('')}</div>`;
@@ -186,7 +190,7 @@
     if (q.type === 'mc') document.querySelectorAll('.opt').forEach((b) => b.onclick = () => answerMC(+b.dataset.i));
     if (q.type === 'order') {
       const fill = () => {
-        document.querySelectorAll('.slot').forEach((s, i) => { const t = picks[i]; s.classList.toggle('filled', t != null); s.innerHTML = (t != null ? esc(q.tiles[t]) : '') + `<small>[${i}]</small>`; });
+        document.querySelectorAll('.slot').forEach((s, i) => { const t = picks[i]; s.classList.toggle('filled', t != null); s.innerHTML = (t != null ? esc(q.tiles[t]) : '') + `<small>${slotLbl(i)}</small>`; });
         document.querySelectorAll('.ptile').forEach((b) => b.classList.toggle('used', picks.includes(+b.dataset.t)));
         $('#check').disabled = picks.length !== q.answer.length;
       };
@@ -303,12 +307,12 @@
     const answeredCount = Object.keys(me.answers || {}).length;
     const extra = gameId === 'wrapup'
       ? `<div class="exit"><span class="pill">Exit ticket</span>
-          <h2 style="font-size:clamp(22px,3vw,30px)">Define sorting in your own words.</h2>
-          <textarea id="exitT" placeholder="Sorting is...">${esc(me.exit || '')}</textarea>
+          <h2 style="font-size:clamp(22px,3vw,30px)">${esc(G.exitQ)}</h2>
+          <textarea id="exitT" placeholder="${esc(G.exitPlaceholder)}">${esc(me.exit || '')}</textarea>
           <button class="btn small go" id="sendExit" type="button" style="justify-self:start">${me.exit ? 'Update my answer' : 'Send my answer'}</button>
-          <div class="model" id="model" ${me.exit ? '' : 'hidden'}><b>Model answer:</b> Sorting means arranging items in a meaningful order, such as smallest to largest or A to Z, so they are easier to find and use. Insertion sort builds a sorted part one item at a time: it shifts larger items right and inserts each key into the gap.</div></div>`
-      : `<div class="reveal"><span class="pill">Today's topic</span><div class="big">Insertion Sort</div></div>
-         <div class="recap"><div><b>Shift-based logic</b>Move elements to make space</div><div><b>Two parts</b>Sorted vs unsorted sections</div><div><b>Python coding</b>Sort numbers and strings</div></div>`;
+          <div class="model" id="model" ${me.exit ? '' : 'hidden'}><b>Model answer:</b> ${esc(G.exitModel)}</div></div>`
+      : `<div class="reveal"><span class="pill">Today's topic</span><div class="big">${esc(G.topic)}</div></div>
+         <div class="recap">${(G.recap || []).map(([b, t]) => `<div><b>${esc(b)}</b>${esc(t)}</div>`).join('')}</div>`;
     app.innerHTML = `<section class="center"><div class="card">
       <span class="pill">${esc(G.name)}</span>
       <h1 style="font-size:clamp(30px,5vw,48px)">${me.locked && answeredCount < N ? "Time's up, " : 'Well played, '}${esc(me.name)}!</h1>
